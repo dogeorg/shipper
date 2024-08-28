@@ -12,7 +12,20 @@ npm install
 
 Create a .env file with the following contents:
 ```
-AUSPOST_API_KEY=<OBTAIN A KEY>
+AUSPOST_API_KEY=your-api-key-here
+ALLOWED_ORIGINS=http://localhost:3000,https://yourdomain.com
+```
+
+### Run via Docker container
+```
+# Build the container
+docker build -t shipper .
+
+# Run the container
+docker run -p 3000:3000 --env-file .env shipper
+
+# Interact with container
+http <address>:3000/shipping/calc sku=b0rk country=PT
 ```
 
 ### Run locally
