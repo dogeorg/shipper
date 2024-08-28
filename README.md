@@ -2,12 +2,6 @@
 
 Postage calculation API for Dogebox pre-orders
 
-### Installation
-
-```
-npm install
-```
-
 ### Setup
 
 Create a .env file with the following contents:
@@ -28,11 +22,14 @@ docker run -p 3000:3000 --env-file .env shipper
 http <address>:3000/shipping/calc sku=b0rk country=PT
 ```
 
-### Run locally
+### (OR) Run locally
 
 ```
+npm install
 npm run dev
 ```
+
+---
 
 ### Interacting with API
 
