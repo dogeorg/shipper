@@ -10,7 +10,8 @@ AUSPOST_API_KEY=your-api-key-here
 ALLOWED_ORIGINS=http://localhost:3000,https://yourdomain.com
 ```
 
-### Run via Docker container
+### Running in Prod (via Docker container)
+
 ```
 # Build the container
 docker build -t shipper .
@@ -22,14 +23,32 @@ docker run -p 3000:3000 --env-file .env shipper
 http <address>:3000/shipping/calc sku=b0rk country=PT
 ```
 
-### (OR) Run locally
+### Run in Prod (bare metal)
 
 ```
+# Install NodeJS 18 or upwards
+nvm install 18
+
+# Install project dependencies
+npm install
+
+# Compile application (Typescript -> Javascript)
+npm run build
+
+# Run app
+npm start
+```
+
+### Run dev server (not suitable for prod)
+
+```
+# Requires NodeJS 18 or greater
 npm install
 npm run dev
 ```
 
 ---
+
 
 ### Interacting with API
 
