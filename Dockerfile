@@ -13,9 +13,6 @@ RUN npm install --verbose --no-audit --ignore-scripts
 # Copy the rest of your application's source code
 COPY . .
 
-# Install TypeScript globally
-RUN npm install -g typescript
-
 # Compile app
 RUN npm run build
 
