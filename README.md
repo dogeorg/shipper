@@ -4,6 +4,8 @@ Postage calculation API for Dogebox pre-orders
 
 ### Setup
 
+Requires NodeJS 18 or upwards OR docker.
+
 Create a .env file with the following contents:
 ```
 AUSPOST_API_KEY=your-api-key-here
