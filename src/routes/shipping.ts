@@ -3,6 +3,7 @@ import { ShippingRequest, ErrorResponse, SuccessResponse, ShippingOption } from 
 import { editions, deliveryAdvice, fixedDomesticServices } from '../config';
 import { getInternationalServices } from '../services/calculate-cost';
 import { getCountries } from '../services/countries';
+import { toDogePlusHandling } from '../lib/convert';
 
 const router = Router();
 
@@ -57,7 +58,13 @@ async function handleShippingCalc(req: Request, res: Response): Promise<void> {
 
     if (country.toUpperCase() === 'AU') {
       serviceType = 'domestic';
-      services = fixedDomesticServices[sku];
+
+      services = fixedDomesticServices[sku].map((s) => {
+        return {
+          ...s,
+          price: toDogePlusHandling(s.price)
+        }
+      });
     } else {
       serviceType = 'international';
       services = await getInternationalServices(country, parcel.weight, postcode);
