@@ -76,7 +76,8 @@ async function handleShippingCalc(req: Request, res: Response): Promise<void> {
     const options: ShippingOption[] = services.map(s => ({
       id: s.code || s.name,
       label: s.name,
-      price: s.price.toString()
+      price: s.price.toString(),
+      currency: 'doge'
     }));
 
     const successResponse: SuccessResponse = {

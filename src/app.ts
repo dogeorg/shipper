@@ -14,6 +14,16 @@ async function startServer() {
       process.exit(1);
     }
 
+    if (!process.env.DOGE_TO_AUD) {
+      console.error('Error: DOGE_TO_AUD environment variable is not set');
+      process.exit(1);
+    }
+
+    if (!process.env.HANDLING_COST_IN_DOGE) {
+      console.error('Error: HANDLING_COST environment variable is not set');
+      process.exit(1);
+    }
+
     // Check AusPost is reachable
     if (await canReachService()) {
       console.log('[✓] Startup check passed: AusPOST shipping calculation API is reachable')

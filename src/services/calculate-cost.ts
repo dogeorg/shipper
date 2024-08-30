@@ -41,7 +41,27 @@ export async function getInternationalServices(countryCode: string, weight: numb
   }
 
   const data = await response.json() as AusPostServiceResponse;
-  return data.services.service;
+  const services = data.services.service.map((s) => {
+    return {
+      ...s,
+      price: toDoge(s.price)
+    }
+  })
+  return services;
+}
+
+function toDoge(n: number): number {
+  // Where n is AUD
+  const inDoge = n / Number(config.dogeToAudRate);
+  const inDogePlusHandling = inDoge + Number(config.handlingCost);
+  const roundedUp = Math.ceil(inDogePlusHandling);
+  const nextEndingIn69 = Math.ceil(roundedUp / 100) * 100 + 69;
+
+  if (nextEndingIn69 < 30) {
+    throw new Error('Malfunction calcuting shipping cost')
+  }
+
+  return nextEndingIn69;
 }
 
 export async function getDomesticServices(fromPostcode: string, toPostcode: string, parcel: Parcel): Promise<AusPostService[]> {

@@ -10,6 +10,7 @@ export interface ShippingOption {
   id: string;
   label: string;
   price: string;
+  currency: 'DOGE';
 }
 
 export interface SuccessResponse {

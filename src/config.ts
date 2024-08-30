@@ -1,6 +1,8 @@
 export const config = {
   apiKey: process.env.AUSPOST_API_KEY || '',
   baseURL: 'https://digitalapi.auspost.com.au',
+  dogeToAudRate: process.env.DOGE_TO_AUD || 0.15,
+  handlingCost: process.env.HANDLING_COST_IN_DOGE || 30,
 };
 
 export const editions = {
