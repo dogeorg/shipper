@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { ShippingRequest, ErrorResponse, SuccessResponse, ShippingOption } from '../types';
 import { editions, deliveryAdvice, fixedDomesticServices } from '../config';
-import { getInternationalServices } from '../services/shipping';
+import { getInternationalServices } from '../services/calculate-cost';
 import { getCountries } from '../services/countries';
 
 const router = Router();
@@ -99,14 +99,27 @@ async function handleShippingCalc(req: Request, res: Response): Promise<void> {
 
 async function handleGetCountries(req: Request, res: Response): Promise<void> {
   try {
+    // Get available international destinations from AusPOST
     const countries = await getCountries();
+
+    // Format
+    const c = countries.map(country => ({
+      code: country.code,
+      name: country.name
+    }))
+
+    // Add Australia
+    c.push({
+      code: "AU",
+      name: "AUSTRALIA"
+    });
+
+    // Sort by country name
+    c.sort((a, b) => a.name.localeCompare(b.name));
 
     const successResponse = {
       success: true,
-      countries: countries.map(country => ({
-        code: country.code,
-        name: country.name
-      }))
+      countries: c
     };
 
     res.json(successResponse);
