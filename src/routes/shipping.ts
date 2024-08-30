@@ -77,7 +77,7 @@ async function handleShippingCalc(req: Request, res: Response): Promise<void> {
       id: s.code || s.name,
       label: s.name,
       price: s.price.toString(),
-      currency: 'doge'
+      currency: 'DOGE'
     }));
 
     const successResponse: SuccessResponse = {
