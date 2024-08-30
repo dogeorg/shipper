@@ -50,18 +50,28 @@ export async function getInternationalServices(countryCode: string, weight: numb
   return services;
 }
 
-function toDoge(n: number): number {
-  // Where n is AUD
-  const inDoge = n / Number(config.dogeToAudRate);
-  const inDogePlusHandling = inDoge + Number(config.handlingCost);
-  const roundedUp = Math.ceil(inDogePlusHandling);
-  const nextEndingIn69 = Math.ceil(roundedUp / 100) * 100 + 69;
+function toDoge(postageCostInAUD: number): number {
+  // Returns the cost of
+  // <<postage AND handling>>
+  // in <<Doge>>
+  // rounded to the NEAREST number ending in <<69>>.
 
-  if (nextEndingIn69 < 30) {
-    throw new Error('Malfunction calcuting shipping cost')
+  const inDoge = postageCostInAUD / Number(config.dogeToAudRate);
+  const inDogePlusHandling = inDoge + Number(config.handlingCost);
+  const roundedValue = Math.round(inDogePlusHandling);
+
+  // Calculate the lower and upper bounds
+  const lowerBound = Math.floor(roundedValue / 100) * 100 + 69;
+  const upperBound = Math.ceil(roundedValue / 100) * 100 + 69;
+
+  // Choose the nearest bound
+  const nearestEndingIn69 = (roundedValue - lowerBound < upperBound - roundedValue) ? lowerBound : upperBound;
+
+  if (nearestEndingIn69 < 30) {
+    throw new Error('Malfunction calculating shipping cost');
   }
 
-  return nextEndingIn69;
+  return nearestEndingIn69;
 }
 
 export async function getDomesticServices(fromPostcode: string, toPostcode: string, parcel: Parcel): Promise<AusPostService[]> {
