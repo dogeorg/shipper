@@ -1,4 +1,4 @@
-export type Edition = 'standard' | 'founders' | 'b0rk';
+export type Edition = "standard" | "founders" | "b0rk";
 
 export interface ShippingRequest {
   sku: Edition;
@@ -9,8 +9,10 @@ export interface ShippingRequest {
 export interface ShippingOption {
   id: string;
   label: string;
-  price: string;
-  currency: 'DOGE';
+  price_shipping_and_handling_only: string;
+  price_product_only: string;
+  price_combined_total: string;
+  currency: "DOGE";
 }
 
 export interface SuccessResponse {
@@ -26,3 +28,4 @@ export interface ErrorResponse {
 }
 
 export type ApiResponse = SuccessResponse | ErrorResponse;
+
