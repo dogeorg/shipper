@@ -1,9 +1,14 @@
-import { Router, Request, Response } from 'express';
-import { ShippingRequest, ErrorResponse, SuccessResponse, ShippingOption } from '../types';
-import { editions, deliveryAdvice, fixedDomesticServices } from '../config';
-import { getInternationalServices } from '../services/calculate-cost';
-import { getCountries } from '../services/countries';
-import { toDogePlusHandling } from '../lib/convert';
+import { Router, Request, Response } from "express";
+import {
+  ShippingRequest,
+  ErrorResponse,
+  SuccessResponse,
+  ShippingOption,
+} from "../types";
+import { editions, deliveryAdvice, fixedDomesticServices } from "../config";
+import { getInternationalServices } from "../services/calculate-cost";
+import { getCountries } from "../services/countries";
+import { toDogePlusHandling } from "../lib/convert";
 
 const router = Router();
 
@@ -17,9 +22,9 @@ function isValidCountry(country: string): boolean {
 }
 
 function normalizePostcode(postcode: string | undefined): string | undefined {
-  if (typeof postcode === 'string') {
+  if (typeof postcode === "string") {
     const trimmedPostcode = postcode.trim();
-    return trimmedPostcode !== '' ? trimmedPostcode : undefined;
+    return trimmedPostcode !== "" ? trimmedPostcode : undefined;
   }
   return undefined;
 }
@@ -32,18 +37,22 @@ async function handleShippingCalc(req: Request, res: Response): Promise<void> {
   // Input validation
   const errors: string[] = [];
   if (!isValidSku(sku)) {
-    errors.push(`Invalid SKU. Received "${sku}", expected one of ${Object.keys(editions).join(', ')}`);
+    errors.push(
+      `Invalid SKU. Received "${sku}", expected one of ${Object.keys(editions).join(", ")}`,
+    );
   }
 
   if (!isValidCountry(country)) {
-    errors.push(`Malformed country code. Received "${country}", expected 2 letter A-Z`);
+    errors.push(
+      `Malformed country code. Received "${country}", expected 2 letter A-Z`,
+    );
   }
 
   if (errors.length > 0) {
     const errorResponse: ErrorResponse = {
       success: false,
-      error: 'BAD_INPUT',
-      reasons: errors
+      error: "BAD_INPUT",
+      reasons: errors,
     };
     res.status(400).json(errorResponse);
     return;
@@ -51,55 +60,64 @@ async function handleShippingCalc(req: Request, res: Response): Promise<void> {
 
   try {
     const selectedEdition = editions[sku];
-    const parcel = { ...selectedEdition.dimensions, weight: selectedEdition.weight };
+    const parcel = {
+      ...selectedEdition.dimensions,
+      weight: selectedEdition.weight,
+    };
 
     let services: any[];
-    let serviceType: 'domestic' | 'international';
+    let serviceType: "domestic" | "international";
 
-    if (country.toUpperCase() === 'AU') {
-      serviceType = 'domestic';
+    if (country.toUpperCase() === "AU") {
+      serviceType = "domestic";
 
       services = fixedDomesticServices[sku].map((s) => {
         return {
           ...s,
-          price: toDogePlusHandling(s.price)
-        }
+          price: toDogePlusHandling(s.price),
+        };
       });
     } else {
-      serviceType = 'international';
-      services = await getInternationalServices(country, parcel.weight, postcode);
+      serviceType = "international";
+      services = await getInternationalServices(
+        country,
+        parcel.weight,
+        postcode,
+      );
     }
 
     if (!services || services.length === 0) {
       const noServicesResponse: SuccessResponse = {
         success: true,
         options: [],
-        deliveryAdviceURL: deliveryAdvice[serviceType]
+        deliveryAdviceURL: deliveryAdvice[serviceType],
       };
       res.status(200).json(noServicesResponse);
       return;
     }
 
-    const options: ShippingOption[] = services.map(s => ({
+    const options: ShippingOption[] = services.map((s) => ({
       id: s.code || s.name,
       label: s.name,
-      price: s.price.toString(),
-      currency: 'DOGE'
+      price_shipping_and_handling_only: s.price.toString(),
+      price_product_only: editions[sku].price.toFixed(),
+      price_combined_total: (editions[sku].price + s.price).toString(),
+      currency: "DOGE",
     }));
 
     const successResponse: SuccessResponse = {
       success: true,
       options,
-      deliveryAdviceURL: deliveryAdvice[serviceType]
+      deliveryAdviceURL: deliveryAdvice[serviceType],
     };
 
     res.json(successResponse);
   } catch (error) {
-    console.error('Error:', error);
+    console.error("Error:", error);
     const errorResponse: ErrorResponse = {
       success: false,
-      error: 'SERVER_ERROR',
-      reasons: ['An unexpected error occurred']
+      error: "SERVER_ERROR",
+      reasons: ["An unexpected error occurred"],
     };
     res.status(500).json(errorResponse);
   }
@@ -111,15 +129,15 @@ async function handleGetCountries(req: Request, res: Response): Promise<void> {
     const countries = await getCountries();
 
     // Format
-    const c = countries.map(country => ({
+    const c = countries.map((country) => ({
       code: country.code,
-      name: country.name
-    }))
+      name: country.name,
+    }));
 
     // Add Australia
     c.push({
       code: "AU",
-      name: "AUSTRALIA"
+      name: "AUSTRALIA",
     });
 
     // Sort by country name
@@ -127,22 +145,23 @@ async function handleGetCountries(req: Request, res: Response): Promise<void> {
 
     const successResponse = {
       success: true,
-      countries: c
+      countries: c,
     };
 
     res.json(successResponse);
   } catch (error) {
-    console.error('Error:', error);
+    console.error("Error:", error);
     const errorResponse: ErrorResponse = {
       success: false,
-      error: 'SERVER_ERROR',
-      reasons: ['An unexpected error occurred while fetching countries']
+      error: "SERVER_ERROR",
+      reasons: ["An unexpected error occurred while fetching countries"],
     };
     res.status(500).json(errorResponse);
   }
 }
 
-router.post('/calc', handleShippingCalc);
-router.get('/countries', handleGetCountries);
+router.post("/calc", handleShippingCalc);
+router.get("/countries", handleGetCountries);
 
 export default router;
+
