@@ -10,7 +10,10 @@ Create a .env file with the following contents:
 ```
 AUSPOST_API_KEY=your-api-key-here
 ALLOWED_ORIGINS=http://localhost:3000,https://yourdomain.com
+HANDLING_COST_IN_DOGE=1
+DOGE_TO_AUD=1
 ```
+Note: the HANDLING_COST_IN_DOGE and DOGE_TO_AUD value should be set to the correct Doge amount value
 
 ### Running in Prod (via Docker container)
 

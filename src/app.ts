@@ -20,7 +20,7 @@ async function startServer() {
     }
 
     if (!process.env.HANDLING_COST_IN_DOGE) {
-      console.error('Error: HANDLING_COST environment variable is not set');
+      console.error('Error: HANDLING_COST_IN_DOGE environment variable is not set');
       process.exit(1);
     }
 
