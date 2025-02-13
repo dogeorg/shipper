@@ -1,5 +1,5 @@
-import { config } from '../config';
-import { toDogePlusHandling } from '../lib/convert';
+import { config } from "../config/index";
+import { toDogePlusHandling } from "../lib/convert";
 
 interface AusPostService {
   code: string;
@@ -14,7 +14,7 @@ interface AusPostServiceResponse {
   };
 }
 
-// Parcel dimensions are fixed and not provided by the user. 
+// Parcel dimensions are fixed and not provided by the user.
 // They are set in config.
 interface Parcel {
   length: number;
@@ -23,9 +23,13 @@ interface Parcel {
   weight: number;
 }
 
-export async function getInternationalServices(countryCode: string, weight: number, postcode: string = ''): Promise<AusPostService[]> {
-  let url = `${config.baseURL}/postage/parcel/international/service.json?country_code=${countryCode}&weight=${weight}`;
-  
+export async function getInternationalServices(
+  countryCode: string,
+  weight: number,
+  postcode: string = ""
+): Promise<AusPostService[]> {
+  let url = `${config.auspost.baseURL}/postage/parcel/international/service.json?country_code=${countryCode}&weight=${weight}`;
+
   // Postcode is optional. When provided, tack it on.
   if (postcode) {
     url += `&destination_postcode=${postcode}`;
@@ -33,35 +37,42 @@ export async function getInternationalServices(countryCode: string, weight: numb
 
   const response = await fetch(url, {
     headers: {
-      'AUTH-KEY': config.apiKey
-    }
+      "AUTH-KEY": config.auspost.apiKey,
+    },
   });
 
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  const data = await response.json() as AusPostServiceResponse;
+  const data = (await response.json()) as AusPostServiceResponse;
   const services = data.services.service.map((s) => {
     return {
       ...s,
-      price: toDogePlusHandling(s.price)
-    }
-  })
+      price: toDogePlusHandling(s.price),
+    };
+  });
   return services;
 }
 
-export async function getDomesticServices(fromPostcode: string, toPostcode: string, parcel: Parcel): Promise<AusPostService[]> {
-  const response = await fetch(`${config.baseURL}/postage/parcel/domestic/service.json?from_postcode=${fromPostcode}&to_postcode=${toPostcode}&length=${parcel.length}&width=${parcel.width}&height=${parcel.height}&weight=${parcel.weight}`, {
-    headers: {
-      'AUTH-KEY': config.apiKey
+export async function getDomesticServices(
+  fromPostcode: string,
+  toPostcode: string,
+  parcel: Parcel
+): Promise<AusPostService[]> {
+  const response = await fetch(
+    `${config.auspost.baseURL}/postage/parcel/domestic/service.json?from_postcode=${fromPostcode}&to_postcode=${toPostcode}&length=${parcel.length}&width=${parcel.width}&height=${parcel.height}&weight=${parcel.weight}`,
+    {
+      headers: {
+        "AUTH-KEY": config.auspost.apiKey,
+      },
     }
-  });
+  );
 
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  const data = await response.json() as AusPostServiceResponse;
+  const data = (await response.json()) as AusPostServiceResponse;
   return data.services.service;
 }

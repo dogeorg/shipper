@@ -1,4 +1,4 @@
-import { config } from '../config';
+import { config } from "../config/index";
 
 interface Country {
   code: string;
@@ -12,18 +12,18 @@ interface CountriesResponse {
 }
 
 export async function getCountries(): Promise<Country[]> {
-  const url = `${config.baseURL}/postage/country.json`;
+  const url = `${config.auspost.baseURL}/postage/country.json`;
 
   const response = await fetch(url, {
     headers: {
-      'AUTH-KEY': config.apiKey
-    }
+      "AUTH-KEY": config.auspost.apiKey,
+    },
   });
 
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  const data = await response.json() as CountriesResponse;
+  const data = (await response.json()) as CountriesResponse;
   return data.countries.country;
 }

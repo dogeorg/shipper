@@ -1,21 +1,18 @@
 import { Router, Request, Response } from "express";
 import {
   ShippingRequest,
+  ShippingRequestSchema,
   ErrorResponse,
   SuccessResponse,
   ShippingOption,
 } from "../types";
-import { editions, deliveryAdvice, fixedDomesticServices } from "../config";
+import { config } from "../config/index";
 import { getInternationalServices } from "../services/calculate-cost";
 import { getCountries } from "../services/countries";
 import { toDogePlusHandling } from "../lib/convert";
+import { fromZodError } from "zod-validation-error";
 
 const router = Router();
-
-function isValidSku(sku: string): boolean {
-  const validSkus = Object.keys(editions);
-  return validSkus.includes(sku);
-}
 
 function isValidCountry(country: string): boolean {
   return /^[A-Z]{2}$/.test(country);
@@ -30,36 +27,22 @@ function normalizePostcode(postcode: string | undefined): string | undefined {
 }
 
 async function handleShippingCalc(req: Request, res: Response): Promise<void> {
-  const { sku, country, postcode: rawPostcode }: ShippingRequest = req.body;
-
-  const postcode = normalizePostcode(rawPostcode);
-
-  // Input validation
-  const errors: string[] = [];
-  if (!isValidSku(sku)) {
-    errors.push(
-      `Invalid SKU. Received "${sku}", expected one of ${Object.keys(editions).join(", ")}`,
-    );
-  }
-
-  if (!isValidCountry(country)) {
-    errors.push(
-      `Malformed country code. Received "${country}", expected 2 letter A-Z`,
-    );
-  }
-
-  if (errors.length > 0) {
-    const errorResponse: ErrorResponse = {
-      success: false,
-      error: "BAD_INPUT",
-      reasons: errors,
-    };
-    res.status(400).json(errorResponse);
-    return;
-  }
-
   try {
-    const selectedEdition = editions[sku];
+    const result = ShippingRequestSchema.safeParse(req.body);
+
+    if (!result.success) {
+      const errorResponse: ErrorResponse = {
+        success: false,
+        error: "BAD_INPUT",
+        reasons: fromZodError(result.error).message.split("\n"),
+      };
+      res.status(400).json(errorResponse);
+      return;
+    }
+
+    const { sku, country, postcode } = result.data;
+
+    const selectedEdition = config.editions[sku];
     const parcel = {
       ...selectedEdition.dimensions,
       weight: selectedEdition.weight,
@@ -71,18 +54,20 @@ async function handleShippingCalc(req: Request, res: Response): Promise<void> {
     if (country.toUpperCase() === "AU") {
       serviceType = "domestic";
 
-      services = fixedDomesticServices[sku].map((s) => {
-        return {
-          ...s,
-          price: toDogePlusHandling(s.price),
-        };
-      });
+      services = config.fixedDomesticServices[sku].map(
+        (s: { name: string; price: number }) => {
+          return {
+            ...s,
+            price: toDogePlusHandling(s.price),
+          };
+        }
+      );
     } else {
       serviceType = "international";
       services = await getInternationalServices(
         country,
         parcel.weight,
-        postcode,
+        postcode
       );
     }
 
@@ -90,7 +75,7 @@ async function handleShippingCalc(req: Request, res: Response): Promise<void> {
       const noServicesResponse: SuccessResponse = {
         success: true,
         options: [],
-        deliveryAdviceURL: deliveryAdvice[serviceType],
+        deliveryAdviceURL: config.deliveryAdvice[serviceType],
       };
       res.status(200).json(noServicesResponse);
       return;
@@ -100,15 +85,15 @@ async function handleShippingCalc(req: Request, res: Response): Promise<void> {
       id: s.code || s.name,
       label: s.name,
       price_shipping_and_handling_only: s.price.toString(),
-      price_product_only: editions[sku].price.toFixed(),
-      price_combined_total: (editions[sku].price + s.price).toString(),
+      price_product_only: config.editions[sku].price.toFixed(),
+      price_combined_total: (config.editions[sku].price + s.price).toString(),
       currency: "DOGE",
     }));
 
     const successResponse: SuccessResponse = {
       success: true,
       options,
-      deliveryAdviceURL: deliveryAdvice[serviceType],
+      deliveryAdviceURL: config.deliveryAdvice[serviceType],
     };
 
     res.json(successResponse);
@@ -164,4 +149,3 @@ router.post("/calc", handleShippingCalc);
 router.get("/countries", handleGetCountries);
 
 export default router;
-

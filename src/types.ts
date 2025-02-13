@@ -1,10 +1,15 @@
-export type Edition = "standard" | "founders" | "b0rk";
+import { z } from "zod";
+import { config } from "./config/index";
 
-export interface ShippingRequest {
-  sku: Edition;
-  country: string;
-  postcode: string;
-}
+const validSkus = Object.keys(config.editions) as [string, ...string[]];
+
+export const ShippingRequestSchema = z.object({
+  sku: z.enum(validSkus),
+  country: z.string().length(2).toUpperCase(),
+  postcode: z.string().optional(),
+});
+
+export type ShippingRequest = z.infer<typeof ShippingRequestSchema>;
 
 export interface ShippingOption {
   id: string;
@@ -12,7 +17,7 @@ export interface ShippingOption {
   price_shipping_and_handling_only: string;
   price_product_only: string;
   price_combined_total: string;
-  currency: "DOGE";
+  currency: string;
 }
 
 export interface SuccessResponse {
@@ -28,4 +33,3 @@ export interface ErrorResponse {
 }
 
 export type ApiResponse = SuccessResponse | ErrorResponse;
-

@@ -6,23 +6,38 @@ Postage calculation API for Dogebox pre-orders
 
 Requires NodeJS 18 or upwards OR docker.
 
-Create a .env file with the following contents:
+Copy the example configuration file and modify it for your environment:
+
+```bash
+cp config/config.example.json config/config.development.json
 ```
-AUSPOST_API_KEY=your-api-key-here
-ALLOWED_ORIGINS=http://localhost:3000,https://yourdomain.com
-HANDLING_COST_IN_DOGE=1
-DOGE_TO_AUD=1
+
+Edit `config/config.development.json` with your settings:
+
+```json
+{
+  "port": 3000,
+  "auspostApiKey": "your-api-key-here",
+  "dogeToAudRate": 0.15,
+  "handlingCostInDoge": 30,
+  "allowedOrigins": "*"
+}
 ```
-Note: the HANDLING_COST_IN_DOGE and DOGE_TO_AUD value should be set to the correct Doge amount value
+
+The application supports different environments through configuration files:
+
+- `config/config.development.json` - Used when NODE_ENV=development or not set
+- `config/config.production.json` - Used when NODE_ENV=production
+- `config/config.test.json` - Used when NODE_ENV=test
 
 ### Running in Prod (via Docker container)
 
-```
+```bash
 # Build the container
 docker build -t shipper .
 
-# Run the container
-docker run -p 3000:3000 --env-file .env shipper
+# Run the container (mount config directory)
+docker run -p 3000:3000 -v $(pwd)/config:/app/config shipper
 
 # Interact with container
 http <address>:3000/shipping/calc sku=b0rk country=PT
@@ -30,7 +45,7 @@ http <address>:3000/shipping/calc sku=b0rk country=PT
 
 ### Run in Prod (bare metal)
 
-```
+```bash
 # Install NodeJS 18 or upwards
 nvm install 18
 
@@ -46,7 +61,7 @@ npm start
 
 ### Run dev server (not suitable for prod)
 
-```
+```bash
 # Requires NodeJS 18 or greater
 npm install
 npm run dev
@@ -54,42 +69,41 @@ npm run dev
 
 ---
 
-
 ### Interacting with API
 
 #### On success:
 
-*Request*
+_Request_
 
-```
+```bash
 http localhost:3000/shipping/calc sku="b0rk" country="PT" postcode="90210"
 ```
 
-*Response*
+_Response_
 
-```
+```json
 {
   "deliveryAdviceURL": "https://auspost.com.au/sending/delivery-speeds-and-coverage/international-delivery-times",
   "options": [
     {
-        "id": "INT_PARCEL_COR_OWN_PACKAGING",
-        "label": "Courier",
-        "price": "134.15"
+      "id": "INT_PARCEL_COR_OWN_PACKAGING",
+      "label": "Courier",
+      "price": "134.15"
     },
     {
-        "id": "INT_PARCEL_EXP_OWN_PACKAGING",
-        "label": "Express",
-        "price": "69.15"
+      "id": "INT_PARCEL_EXP_OWN_PACKAGING",
+      "label": "Express",
+      "price": "69.15"
     },
     {
-        "id": "INT_PARCEL_STD_OWN_PACKAGING",
-        "label": "Standard",
-        "price": "54.15"
+      "id": "INT_PARCEL_STD_OWN_PACKAGING",
+      "label": "Standard",
+      "price": "54.15"
     },
     {
-        "id": "INT_PARCEL_AIR_OWN_PACKAGING",
-        "label": "Economy Air",
-        "price": "51.65"
+      "id": "INT_PARCEL_AIR_OWN_PACKAGING",
+      "label": "Economy Air",
+      "price": "51.65"
     }
   ],
   "success": true
@@ -98,20 +112,20 @@ http localhost:3000/shipping/calc sku="b0rk" country="PT" postcode="90210"
 
 #### On error:
 
-*Example bad request:*
+_Example bad request:_
 
-```
+```bash
 http localhost:3000/shipping/calc sku="bL0rk" country="CHICKEN" postcode="90210"
 ```
 
-*Response:*
+_Response:_
 
-```
+```json
 {
   "error": "BAD_INPUT",
   "reasons": [
-      "Invalid SKU. Received \"bL0rk\", expected one of standard, founders, b0rk",
-      "Malformed country code. Received \"CHICKEN\", expected 2 letter A-Z"
+    "Invalid SKU. Received \"bL0rk\", expected one of standard, founders, b0rk",
+    "Malformed country code. Received \"CHICKEN\", expected 2 letter A-Z"
   ],
   "success": false
 }
