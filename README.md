@@ -73,12 +73,12 @@ npm run dev
 
 #### On success:
 
-_Request URL_
+_Example HTTPie Request_
 ```bash
-http localhost:3000/shipping/calc
+http localhost:3000/shipping/calc sku="b0rk" country="PT" postcode="90210"
 ```
 
-_Request Body (JSON)_
+_Example JSON Payload_
 ```json
 {
     "sku": "b0rk",
@@ -119,12 +119,12 @@ _Response_
 
 #### On error:
 
-_Request URL_
+_Bad Example HTTPie Request_
 ```bash
-http localhost:3000/shipping/calc
+http localhost:3000/shipping/calc sku="bL0rk" country="CHICKEN" postcode="90210"
 ```
 
-_Bad Request Body (JSON)_
+_Bad Example JSON Payload_
 ```json
 {
     "sku": "bL0rk",
