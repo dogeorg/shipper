@@ -73,14 +73,21 @@ npm run dev
 
 #### On success:
 
-_Request_
-
+_Request URL_
 ```bash
-http localhost:3000/shipping/calc sku="b0rk" country="PT" postcode="90210"
+http localhost:3000/shipping/calc
+```
+
+_Request Body (JSON)_
+```json
+{
+    "sku": "b0rk",
+    "country": "PT", 
+    "postcode": "90210"
+}
 ```
 
 _Response_
-
 ```json
 {
   "deliveryAdviceURL": "https://auspost.com.au/sending/delivery-speeds-and-coverage/international-delivery-times",
@@ -112,14 +119,21 @@ _Response_
 
 #### On error:
 
-_Example bad request:_
-
+_Request URL_
 ```bash
-http localhost:3000/shipping/calc sku="bL0rk" country="CHICKEN" postcode="90210"
+http localhost:3000/shipping/calc
+```
+
+_Bad Request Body (JSON)_
+```json
+{
+    "sku": "bL0rk",
+    "country": "CHICKEN", 
+    "postcode": "90210"
+}
 ```
 
 _Response:_
-
 ```json
 {
   "error": "BAD_INPUT",
