@@ -9,6 +9,7 @@ interface Config {
   };
   dogeToAudRate: number;
   handlingCost: number;
+  originPostcode: string;
   editions: {
     [key: string]: {
       price: number;

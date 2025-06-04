@@ -6,6 +6,7 @@
   },
   "dogeToAudRate": 0.15,
   "handlingCost": 30,
+  "originPostcode": "3333",
   "editions": {
     "standard": {
       "price": 3699,
