@@ -9,7 +9,6 @@ import {
 import { config } from "../config/index";
 import { getInternationalServices, getDomesticServices } from "../services/calculate-cost";
 import { getCountries } from "../services/countries";
-import { toDogePlusHandling } from "../lib/convert";
 import { fromZodError } from "zod-validation-error";
 
 const router = Router();
@@ -97,7 +96,7 @@ async function handleShippingCalc(req: Request, res: Response): Promise<void> {
       label: s.name,
       price_shipping_and_handling_only: s.price.toString(),
       price_product_only: config.editions[sku].price.toFixed(),
-      price_combined_total: (Number(config.editions[sku].price) + Number(s.price)).toString(),
+      price_combined_total: (config.editions[sku].price + parseFloat(s.price)).toString(),
       currency: "DOGE",
     }));
 
