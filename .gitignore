@@ -1,4 +1,14 @@
-*.DS_Store
-*.env*
-dist
-node_modules
+node_modules/
+dist/
+.DS_Store
+
+# Environment-specific config files
+config/*
+!config/config.example.json
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
