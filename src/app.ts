@@ -23,6 +23,11 @@ async function startServer() {
       process.exit(1);
     }
 
+    if (!config.originPostcode) {
+      console.error("Error: Origin postcode is not configured");
+      process.exit(1);
+    }
+
     // Check AusPost is reachable
     if (await canReachService()) {
       console.log(

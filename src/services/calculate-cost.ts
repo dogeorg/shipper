@@ -74,5 +74,11 @@ export async function getDomesticServices(
   }
 
   const data = (await response.json()) as AusPostServiceResponse;
-  return data.services.service;
+  const services = data.services.service.map((s) => {
+    return {
+      ...s,
+      price: toDogePlusHandling(s.price),
+    };
+  });
+  return services;
 }

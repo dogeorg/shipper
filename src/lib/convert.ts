@@ -1,25 +1,17 @@
 import { config } from '../config'
 
 export function toDogePlusHandling(postageCostInAUD: number): number {
-  // Returns the cost of
-  // <<postage AND handling>>
-  // in <<Doge>>
-  // rounded to the NEAREST number ending in <<69>>.
-
+  console.log("postageCostInAUD", postageCostInAUD);
+  // Returns the cost of postage and handling in Doge
   const inDoge = postageCostInAUD / Number(config.dogeToAudRate);
-  const inDogePlusHandling = inDoge + Number(config.handlingCost);
-  const roundedValue = Math.round(inDogePlusHandling);
+  var inDogePlusHandling = inDoge + Number(config.handlingCost);
 
-  // Calculate the lower and upper bounds
-  const lowerBound = Math.floor(roundedValue / 100) * 100 + 69;
-  const upperBound = Math.ceil(roundedValue / 100) * 100 + 69;
-
-  // Choose the nearest bound
-  const nearestEndingIn69 = (roundedValue - lowerBound < upperBound - roundedValue) ? lowerBound : upperBound;
-
-  if (nearestEndingIn69 < 30) {
+  // Add doge factor (round to nearest number ending in .69)
+  inDogePlusHandling = Math.floor(inDogePlusHandling) + (inDogePlusHandling % 1 < 0.69 ? 0.69 : 1.69);
+    
+  if (inDogePlusHandling < 30) {
     throw new Error('Malfunction calculating shipping cost');
   }
 
-  return nearestEndingIn69;
+  return inDogePlusHandling;
 }
