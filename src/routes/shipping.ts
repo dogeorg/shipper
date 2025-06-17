@@ -7,7 +7,10 @@ import {
   ShippingOption,
 } from "../types";
 import { config } from "../config/index";
-import { getInternationalServices, getDomesticServices } from "../services/calculate-cost";
+import {
+  getInternationalServices,
+  getDomesticServices,
+} from "../services/calculate-cost";
 import { getCountries } from "../services/countries";
 import { fromZodError } from "zod-validation-error";
 
@@ -64,13 +67,17 @@ async function handleShippingCalc(req: Request, res: Response): Promise<void> {
       }
 
       if (config.fixedDomesticServices && config.fixedDomesticServices[sku]) {
-        services = config.fixedDomesticServices[sku].map(service => ({
+        services = config.fixedDomesticServices[sku].map((service) => ({
           code: service.name,
           name: service.name,
-          price: service.price
+          price: service.price,
         }));
       } else {
-        services = await getDomesticServices(config.originPostcode, postcode, parcel);
+        services = await getDomesticServices(
+          config.originPostcode,
+          postcode,
+          parcel
+        );
       }
     } else {
       serviceType = "international";
@@ -96,7 +103,9 @@ async function handleShippingCalc(req: Request, res: Response): Promise<void> {
       label: s.name,
       price_shipping_and_handling_only: s.price.toString(),
       price_product_only: config.editions[sku].price.toFixed(),
-      price_combined_total: (config.editions[sku].price + parseFloat(s.price)).toString(),
+      price_combined_total: (
+        config.editions[sku].price + parseFloat(s.price)
+      ).toString(),
       currency: "DOGE",
     }));
 

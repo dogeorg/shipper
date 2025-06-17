@@ -61,6 +61,10 @@ async function startServer() {
     app.use("/shipping", shippingRoutes);
     app.use("/products", productsRoutes);
 
+    app.get("/test", (req, res) => {
+      res.json({ message: "Hello, world!" });
+    });
+
     const port = process.env.PORT || 3333;
     app.listen(port, () => {
       console.log(`[✓] Server is running on port ${port}`);
