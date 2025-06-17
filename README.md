@@ -18,7 +18,6 @@ Edit `config/config.development.json` with your settings (All prices should be i
 {
   "port": 3000,
   "auspost": {
-    "apiKey": "your-api-key-here",
     "baseURL": "https://api.auspost.com.au"
   },
   "dogeToAudRate": 0.15,
@@ -66,11 +65,15 @@ Edit `config/config.development.json` with your settings (All prices should be i
 
 ```
 
+Define your AusPost API key in AUSPOST_API_KEY
+
 The application supports different environments through configuration files:
 
-- `config/config.development.json` - Used when NODE_ENV=development or not set
-- `config/config.production.json` - Used when NODE_ENV=production
-- `config/config.test.json` - Used when NODE_ENV=test
+- `config/config.development.json` - Used when CONFIG_ENV=development or not set
+- `config/config.production.json` - Used when CONFIG_ENV=production
+- `config/config.test.json` - Used when CONFIG_ENV=test
+
+When deploying, set NODE_ENV to production
 
 ### Running in Prod (via Docker container)
 

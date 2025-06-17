@@ -7,7 +7,7 @@ export async function canReachService(): Promise<Boolean> {
   try {
     response = await fetch(url, {
       headers: {
-        "AUTH-KEY": config.auspost.apiKey,
+        "AUTH-KEY": process.env.AUSPOST_API_KEY!,
       },
     });
   } catch (err) {

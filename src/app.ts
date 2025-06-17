@@ -8,7 +8,7 @@ import { config } from "./config/index";
 async function startServer() {
   try {
     // Check for AusPost API key
-    if (!config.auspost.apiKey) {
+    if (!process.env.AUSPOST_API_KEY) {
       console.error("Error: AusPost API key is not configured");
       process.exit(1);
     }

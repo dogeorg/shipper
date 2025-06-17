@@ -1,7 +1,6 @@
 import { config } from '../config'
 
 export function toDogePlusHandling(postageCostInAUD: number): number {
-  console.log("postageCostInAUD", postageCostInAUD);
   // Returns the cost of postage and handling in Doge
   const inDoge = postageCostInAUD / Number(config.dogeToAudRate);
   var inDogePlusHandling = inDoge + Number(config.handlingCost);

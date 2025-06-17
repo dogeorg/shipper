@@ -37,7 +37,7 @@ export async function getInternationalServices(
 
   const response = await fetch(url, {
     headers: {
-      "AUTH-KEY": config.auspost.apiKey,
+      "AUTH-KEY": process.env.AUSPOST_API_KEY!,
     },
   });
 
@@ -64,7 +64,7 @@ export async function getDomesticServices(
     `${config.auspost.baseURL}/postage/parcel/domestic/service.json?from_postcode=${fromPostcode}&to_postcode=${toPostcode}&length=${parcel.length}&width=${parcel.width}&height=${parcel.height}&weight=${parcel.weight}`,
     {
       headers: {
-        "AUTH-KEY": config.auspost.apiKey,
+        "AUTH-KEY": process.env.AUSPOST_API_KEY!,
       },
     }
   );

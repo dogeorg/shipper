@@ -5,6 +5,10 @@ dist/
 # Environment-specific config files
 config/*
 !config/config.example.json
+!config/config.dogebox-shop.json
+
+# Environment variables
+.env
 
 # Logs
 logs

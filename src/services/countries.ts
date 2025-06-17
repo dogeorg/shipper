@@ -16,7 +16,7 @@ export async function getCountries(): Promise<Country[]> {
 
   const response = await fetch(url, {
     headers: {
-      "AUTH-KEY": config.auspost.apiKey,
+      "AUTH-KEY": process.env.AUSPOST_API_KEY!,
     },
   });
 
