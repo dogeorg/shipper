@@ -61,8 +61,9 @@ async function startServer() {
     app.use("/shipping", shippingRoutes);
     app.use("/products", productsRoutes);
 
-    app.listen(config.port, () => {
-      console.log(`[✓] Server is running on port ${config.port}`);
+    const port = process.env.PORT || 3333;
+    app.listen(port, () => {
+      console.log(`[✓] Server is running on port ${port}`);
     });
   } catch (error) {
     console.error("Error during startup:", error);

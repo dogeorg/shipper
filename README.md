@@ -16,7 +16,6 @@ Edit `config/config.development.json` with your settings (All prices should be i
 
 ```json
 {
-  "port": 3000,
   "auspost": {
     "baseURL": "https://api.auspost.com.au"
   },
@@ -66,12 +65,13 @@ Edit `config/config.development.json` with your settings (All prices should be i
 ```
 
 Define your AusPost API key in AUSPOST_API_KEY
+Define your Port in PORT
 
 The application supports different environments through configuration files:
 
 - `config/config.development.json` - Used when CONFIG_ENV=development or not set
 - `config/config.production.json` - Used when CONFIG_ENV=production
-- `config/config.test.json` - Used when CONFIG_ENV=test
+- `config/config.test.json` - Used when CONFIG_ENV=testa
 
 When deploying, set NODE_ENV to production
 
