@@ -4,11 +4,11 @@ import path from "path";
 interface Config {
   port: number;
   auspost: {
-    apiKey: string;
     baseURL: string;
   };
   dogeToAudRate: number;
   handlingCost: number;
+  originPostcode: string;
   editions: {
     [key: string]: {
       price: number;
@@ -49,7 +49,7 @@ class ConfigManager {
   }
 
   private loadConfig(): Config {
-    const env = process.env.NODE_ENV || "development";
+    const env = process.env.CONFIG_ENV || "development";
     const configPath = path.join(
       __dirname,
       "../../config",
@@ -80,7 +80,7 @@ class ConfigManager {
     }
 
     // Validate auspost config
-    if (!config.auspost.apiKey || !config.auspost.baseURL) {
+    if (!process.env.AUSPOST_API_KEY || !config.auspost.baseURL) {
       throw new Error("Missing required auspost configuration fields");
     }
   }

@@ -12,23 +12,68 @@ Copy the example configuration file and modify it for your environment:
 cp config/config.example.json config/config.development.json
 ```
 
-Edit `config/config.development.json` with your settings:
+Edit `config/config.development.json` with your settings (All prices should be in DOGE):
 
 ```json
 {
-  "port": 3000,
-  "auspostApiKey": "your-api-key-here",
+  "auspost": {
+    "baseURL": "https://api.auspost.com.au"
+  },
   "dogeToAudRate": 0.15,
-  "handlingCostInDoge": 30,
-  "allowedOrigins": "*"
+  "handlingCost": 30,
+  "originPostcode": "3333",
+  "editions": {
+    "standard": {
+      "price": 3699,
+      "name": "Standard Edition",
+      "dimensions": { "length": 15, "width": 15, "height": 15 },
+      "weight": 0.7
+    },
+    "founders": {
+      "price": 6999,
+      "name": "Founders Edition",
+      "dimensions": { "length": 20, "width": 20, "height": 20 },
+      "weight": 1.0
+    },
+    "b0rk": {
+      "price": 9001,
+      "name": "Full B0rk Edition",
+      "dimensions": { "length": 25, "width": 25, "height": 25 },
+      "weight": 1.2
+    }
+  },
+  "fixedDomesticServices": {
+    "standard": [
+      { "name": "Regular", "price": 50 },
+      { "name": "Express", "price": 60 }
+    ],
+    "founders": [
+      { "name": "Regular", "price": 55 },
+      { "name": "Express", "price": 75 }
+    ],
+    "b0rk": [
+      { "name": "Regular", "price": 65 },
+      { "name": "Express", "price": 90 }
+    ]
+  },
+  "deliveryAdvice": {
+    "domestic": "https://auspost.com.au/business/shipping/delivery-speeds-and-coverage",
+    "international": "https://auspost.com.au/sending/delivery-speeds-and-coverage/international-delivery-times"
+  }
 }
+
 ```
+
+Define your AusPost API key in AUSPOST_API_KEY
+Define your Port in PORT
 
 The application supports different environments through configuration files:
 
-- `config/config.development.json` - Used when NODE_ENV=development or not set
-- `config/config.production.json` - Used when NODE_ENV=production
-- `config/config.test.json` - Used when NODE_ENV=test
+- `config/config.development.json` - Used when CONFIG_ENV=development or not set
+- `config/config.production.json` - Used when CONFIG_ENV=production
+- `config/config.test.json` - Used when CONFIG_ENV=testa
+
+When deploying, set NODE_ENV to production
 
 ### Running in Prod (via Docker container)
 

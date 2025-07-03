@@ -8,7 +8,7 @@ import { config } from "./config/index";
 async function startServer() {
   try {
     // Check for AusPost API key
-    if (!config.auspost.apiKey) {
+    if (!process.env.AUSPOST_API_KEY) {
       console.error("Error: AusPost API key is not configured");
       process.exit(1);
     }
@@ -20,6 +20,11 @@ async function startServer() {
 
     if (!config.handlingCost) {
       console.error("Error: Handling cost in DOGE is not configured");
+      process.exit(1);
+    }
+
+    if (!config.originPostcode) {
+      console.error("Error: Origin postcode is not configured");
       process.exit(1);
     }
 
@@ -56,8 +61,9 @@ async function startServer() {
     app.use("/shipping", shippingRoutes);
     app.use("/products", productsRoutes);
 
-    app.listen(config.port, () => {
-      console.log(`[✓] Server is running on port ${config.port}`);
+    const port = process.env.PORT || 3333;
+    app.listen(port, () => {
+      console.log(`[✓] Server is running on port ${port}`);
     });
   } catch (error) {
     console.error("Error during startup:", error);

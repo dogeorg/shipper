@@ -7,9 +7,8 @@ import {
   ShippingOption,
 } from "../types";
 import { config } from "../config/index";
-import { getInternationalServices } from "../services/calculate-cost";
+import { getInternationalServices, getDomesticServices } from "../services/calculate-cost";
 import { getCountries } from "../services/countries";
-import { toDogePlusHandling } from "../lib/convert";
 import { fromZodError } from "zod-validation-error";
 
 const router = Router();
@@ -54,14 +53,25 @@ async function handleShippingCalc(req: Request, res: Response): Promise<void> {
     if (country.toUpperCase() === "AU") {
       serviceType = "domestic";
 
-      services = config.fixedDomesticServices[sku].map(
-        (s: { name: string; price: number }) => {
-          return {
-            ...s,
-            price: toDogePlusHandling(s.price),
-          };
-        }
-      );
+      if (!postcode) {
+        const errorResponse: ErrorResponse = {
+          success: false,
+          error: "BAD_INPUT",
+          reasons: ["Postcode is required for domestic shipping"],
+        };
+        res.status(400).json(errorResponse);
+        return;
+      }
+
+      if (config.fixedDomesticServices && config.fixedDomesticServices[sku]) {
+        services = config.fixedDomesticServices[sku].map(service => ({
+          code: service.name,
+          name: service.name,
+          price: service.price
+        }));
+      } else {
+        services = await getDomesticServices(config.originPostcode, postcode, parcel);
+      }
     } else {
       serviceType = "international";
       services = await getInternationalServices(
@@ -86,7 +96,7 @@ async function handleShippingCalc(req: Request, res: Response): Promise<void> {
       label: s.name,
       price_shipping_and_handling_only: s.price.toString(),
       price_product_only: config.editions[sku].price.toFixed(),
-      price_combined_total: (config.editions[sku].price + s.price).toString(),
+      price_combined_total: (config.editions[sku].price + parseFloat(s.price)).toString(),
       currency: "DOGE",
     }));
 
